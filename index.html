@@ -6,11 +6,12 @@ async function logar(){
   const usuario = document.getElementById("usuario").value.trim();
   const senha = document.getElementById("senha").value.trim();
 
-  const resp = await fetch(WEBAPP_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" }, // evita preflight
-    body: JSON.stringify({ tipo:"login", usuario, senha })
-  });
+const resp = await fetch(WEBAPP_URL, {
+  method: "POST",
+  headers: { "Content-Type": "text/plain;charset=utf-8" },
+  body: JSON.stringify({ tipo: "login", usuario, senha })
+});
+
 
   const data = await resp.json();
 
@@ -78,5 +79,6 @@ async function logar(){
 </script>
 </body>
 </html>
+
 
 
