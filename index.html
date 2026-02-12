@@ -1,29 +1,31 @@
 <!doctype html>
-<html lang="pt-br">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Login</title>
-  <style>
-    body{font-family:Arial, sans-serif; background:#f4f6f8; margin:0; display:flex; min-height:100vh; align-items:center; justify-content:center;}
-    .box{background:#fff; padding:20px; border-radius:12px; width:320px; box-shadow:0 10px 30px rgba(0,0,0,.08)}
-    input,button{width:100%; padding:10px; margin-top:10px; border-radius:10px; border:1px solid #ddd}
-    button{border:none; background:#1e40af; color:#fff; cursor:pointer}
-    .msg{margin-top:10px; font-size:14px}
-  </style>
-</head>
-<body>
-  <div class="box">
-    <h3>Entrar</h3>
-    <input id="usuario" placeholder="Usuário" autocomplete="off">
-    <input id="senha" placeholder="Senha" type="password" autocomplete="off">
-    <button id="btn">Acessar</button>
-    <div id="msg" class="msg"></div>
-  </div>
-
 <script>
-  // COLE AQUI A URL DO SEU WEB APP (Apps Script)
-  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzwxBa-DDtruDJFQhBEPonsRnrv0jb2gB7etz9EsoEj9MGuXmDs0hJpab0Tv7zXoMgq/exec";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzwxBa-DDtruDJFQhBEPonsRnrv0jb2gB7etz9EsoEj9MGuXmDs0hJpab0Tv7zXoMgq/exec";
+
+async function logar(){
+  const usuario = document.getElementById("usuario").value.trim();
+  const senha = document.getElementById("senha").value.trim();
+
+  const resp = await fetch(WEBAPP_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" }, // evita preflight
+    body: JSON.stringify({ tipo:"login", usuario, senha })
+  });
+
+  const data = await resp.json();
+
+  if(data.status === "ok"){
+    sessionStorage.setItem("auth_ok","1"); // não fica permanente
+    document.getElementById("usuario").value = "";
+    document.getElementById("senha").value = "";
+    location.href = data.redirect || "pagina.html";
+  } else {
+    alert(data.message || "Falha no login");
+    document.getElementById("senha").value = "";
+  }
+}
+</script>
+
 
   const $ = (id) => document.getElementById(id);
 
@@ -76,4 +78,5 @@
 </script>
 </body>
 </html>
+
 
