@@ -1,59 +1,76 @@
 <!doctype html>
-<script>
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzwxBa-DDtruDJFQhBEPonsRnrv0jb2gB7etz9EsoEj9MGuXmDs0hJpab0Tv7zXoMgq/exec"; 
-// exemplo: https://script.google.com/macros/s/AKfycbXXXX/exec
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login</title>
+  <style>
+    body{font-family:Arial;background:#f4f6f8;margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;}
+    .box{background:#fff;padding:20px;border-radius:12px;width:320px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+    input,button{width:100%;padding:10px;margin-top:10px;border-radius:10px;border:1px solid #ddd}
+    button{border:none;background:#1e40af;color:#fff;cursor:pointer}
+    .msg{margin-top:10px;font-size:14px}
+  </style>
+</head>
+<body>
 
-const $ = (id) => document.getElementById(id);
+  <div class="box">
+    <h3>Entrar</h3>
+    <input id="usuario" placeholder="Usuário" autocomplete="off">
+    <input id="senha" placeholder="Senha" type="password" autocomplete="off">
+    <button id="btn">Acessar</button>
+    <div id="msg" class="msg"></div>
+  </div>
 
-// limpa sessão ao abrir
-sessionStorage.removeItem("auth_ok");
+  <script>
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzwxBa-DDtruDJFQhBEPonsRnrv0jb2gB7etz9EsoEj9MGuXmDs0hJpab0Tv7zXoMgq/exec";
 
-$("btn").onclick = async () => {
+    const $ = (id) => document.getElementById(id);
 
-  $("msg").textContent = "Validando...";
+    window.addEventListener("load", () => {
 
-  const usuario = $("usuario").value.trim();
-  const senha = $("senha").value.trim();
+      // limpa sessão ao abrir
+      sessionStorage.removeItem("auth_ok");
 
-  if (!usuario || !senha) {
-    $("msg").textContent = "Preencha usuário e senha.";
-    return;
-  }
+      $("btn").onclick = async () => {
+        $("msg").textContent = "Validando...";
 
-  try {
+        const usuario = $("usuario").value.trim();
+        const senha = $("senha").value.trim();
 
-    const resp = await fetch(WEBAPP_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"   // 🔥 ESSA LINHA RESOLVE
-      },
-      body: JSON.stringify({
-        tipo: "login",
-        usuario: usuario,
-        senha: senha
-      })
+        if (!usuario || !senha) {
+          $("msg").textContent = "Preencha usuário e senha.";
+          return;
+        }
+
+        try {
+          const resp = await fetch(WEBAPP_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ tipo: "login", usuario, senha })
+          });
+
+          const data = await resp.json();
+
+          if (data.status !== "ok") {
+            $("msg").textContent = data.message || "Login inválido";
+            $("senha").value = "";
+            return;
+          }
+
+          sessionStorage.setItem("auth_ok", "1");
+          $("usuario").value = "";
+          $("senha").value = "";
+
+          window.location.href = data.redirect || "pagina.html";
+
+        } catch (e) {
+          $("msg").textContent = "Erro de conexão/URL do WebApp.";
+          console.error("Erro real:", e);
+        }
+      };
+
     });
-
-    const data = await resp.json();
-
-    if (data.status !== "ok") {
-      $("msg").textContent = data.message || "Login inválido";
-      $("senha").value = "";
-      return;
-    }
-
-    sessionStorage.setItem("auth_ok", "1");
-
-    $("usuario").value = "";
-    $("senha").value = "";
-
-    window.location.href = data.redirect || "pagina.html";
-
-  } catch (e) {
-    $("msg").textContent = "Erro de conexão/URL do WebApp.";
-    console.error("Erro real:", e);
-  }
-
-};
-
-</script>
+  </script>
+</body>
+</html>
