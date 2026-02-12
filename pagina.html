@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Página</title>
+</head>
+<body style="font-family:Arial; padding:20px">
+  <h2>Área interna</h2>
+  <p>Se você fechar e abrir de novo, precisa logar novamente.</p>
+
+  <button onclick="sair()">Sair</button>
+
+<script>
+  // trava mínima: se não tiver auth_ok na sessão, volta pro login
+  if (sessionStorage.getItem("auth_ok") !== "1") {
+    location.href = "index.html";
+  }
+
+  function sair() {
+    sessionStorage.removeItem("auth_ok");
+    location.href = "index.html";
+  }
+</script>
+</body>
+</html>
